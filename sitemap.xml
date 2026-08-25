@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://third-zone.com/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/archery.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/baseball.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/contact.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/football.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/games.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/golf.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://third-zone.com/how.html</loc>
+    <priority>0.8</priority>
+  </url>
+</urlset>
