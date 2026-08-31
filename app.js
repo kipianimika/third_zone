@@ -124,6 +124,75 @@
     reset();
   }
 
+  /* ---- Pipeline rig: stages light up one by one as you scroll ---- */
+  var boardWrap = document.getElementById("board3d");
+  var boardStage = document.getElementById("boardStage");
+  if (boardWrap && boardStage) {
+    var stages = boardWrap.querySelectorAll(".stage");
+    var cables = boardWrap.querySelectorAll(".cable");
+    var ticking = false;
+    var visible = false;
+    var lastRot = null;
+    var lastLit = -1;
+
+    // how far the rig has travelled through the viewport, 0 -> 1
+    function progress(r, vh) {
+      return Math.max(0, Math.min(1, (vh * 0.85 - r.top) / (vh * 0.62 + r.height * 0.5)));
+    }
+
+    function draw() {
+      ticking = false;
+      if (!visible) return;
+      var r = boardWrap.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+
+      // 1. boards sway with the scroll
+      // gentle sway: a limited turn that always shows the boards have depth
+      var sway = -46 + progress(r, vh) * 76;
+      if (lastRot === null || Math.abs(sway - lastRot) >= 1.0) {
+        lastRot = sway;
+        boardStage.style.setProperty("--ry", sway.toFixed(1) + "deg");
+      }
+
+      // 2. light the stages in order: sensor -> edge -> AI -> score
+      var p = progress(r, vh);
+      var lit = Math.floor(p * (stages.length + 0.6));
+      if (lit === lastLit) return;
+      lastLit = lit;
+      for (var i = 0; i < stages.length; i++) {
+        stages[i].classList.toggle("on", i < lit);
+      }
+      for (var j = 0; j < cables.length; j++) {
+        cables[j].classList.toggle("on", j < lit - 1);
+      }
+      boardWrap.classList.toggle("complete", lit >= stages.length);
+    }
+
+    function onScroll() {
+      if (!ticking) { ticking = true; requestAnimationFrame(draw); }
+    }
+
+    if (reduce) {
+      for (var k = 0; k < stages.length; k++) stages[k].classList.add("on");
+      for (var m = 0; m < cables.length; m++) cables[m].classList.add("on");
+      boardWrap.classList.add("complete");
+      boardStage.style.setProperty("--ry", "-24deg");
+    } else {
+      // weak devices: skip rendering the hidden back faces
+      var cores = navigator.hardwareConcurrency || 8;
+      if (cores <= 4) boardWrap.classList.add("lite");
+      var vizObs = new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        boardWrap.classList.toggle("idle", !visible);
+        if (visible) onScroll();
+      }, { rootMargin: "140px 0px" });
+      vizObs.observe(boardWrap);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      draw();
+    }
+  }
+
   /* ---- Contact form ---- */
   // Submits to Netlify (when hosted there) via AJAX so the inline
   // "thanks" message still shows; degrades gracefully anywhere else.
